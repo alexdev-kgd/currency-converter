@@ -1,17 +1,17 @@
 <div class="currency-form">
   <form *ngIf="formGroup" [formGroup]="formGroup">
-    <app-currency-input [label]="'From:'">
+    <app-currency-input>
       <app-currency-dropdown
         dropdownType="fromCurrency"
       ></app-currency-dropdown>
-      <mat-form-field>
+      <mat-form-field appearance="outline">
         <input matInput formControlName="fromAmount" type="text" />
       </mat-form-field>
     </app-currency-input>
-
-    <app-currency-input [label]="'To:'">
+    <mat-icon svgIcon="exchange" [inline]="true" id="exchange-icon"></mat-icon>
+    <app-currency-input>
       <app-currency-dropdown dropdownType="toCurrency"></app-currency-dropdown>
-      <mat-form-field>
+      <mat-form-field appearance="outline">
         <input matInput formControlName="toAmount" type="text" />
       </mat-form-field>
     </app-currency-input>

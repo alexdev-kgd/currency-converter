@@ -1,5 +1,7 @@
-<select id="from-currency">
-  <option *ngFor="let currency of currencies" [value]="currency">
-    {{ currency }}
-  </option>
-</select>
+<mat-form-field appearance="outline">
+  <mat-select>
+    <mat-option *ngFor="let currency of currencies" [value]="currency">
+      {{ currency }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

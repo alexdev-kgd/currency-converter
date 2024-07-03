@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LayoutsModule } from './layouts/layouts.module';
+import { IconRegistryService } from './shared/services/icon-registry.service';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +12,6 @@ import { LayoutsModule } from './layouts/layouts.module';
 })
 export class AppComponent {
   title = 'currencyConverter';
+
+  constructor(private iconRegistryService: IconRegistryService) {}
 }
