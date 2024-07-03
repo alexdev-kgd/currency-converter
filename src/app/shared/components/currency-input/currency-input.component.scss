@@ -1,0 +1,20 @@
+:host {
+  .input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  label {
+    width: 6rem;
+  }
+
+  select {
+    width: 6rem;
+  }
+
+  input[type="number"] {
+    width: 10rem;
+  }
+}

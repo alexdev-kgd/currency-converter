@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CurrenciesService } from './shared/services/currencies.service';
+import { LayoutsModule } from './layouts/layouts.module';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, LayoutsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

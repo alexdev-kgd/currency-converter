@@ -1,1 +1,19 @@
-<p>currency-form works!</p>
+<div class="currency-form">
+  <form *ngIf="formGroup" [formGroup]="formGroup">
+    <app-currency-input [label]="'From:'">
+      <app-currency-dropdown
+        dropdownType="fromCurrency"
+      ></app-currency-dropdown>
+      <mat-form-field>
+        <input matInput formControlName="fromAmount" type="text" />
+      </mat-form-field>
+    </app-currency-input>
+
+    <app-currency-input [label]="'To:'">
+      <app-currency-dropdown dropdownType="toCurrency"></app-currency-dropdown>
+      <mat-form-field>
+        <input matInput formControlName="toAmount" type="text" />
+      </mat-form-field>
+    </app-currency-input>
+  </form>
+</div>

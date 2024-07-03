@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ICurrency } from '../interfaces/currency.interface';
+import { CurrencyEnum } from '../enums/currency.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -8,9 +10,11 @@ import { Observable } from 'rxjs';
 export class CurrenciesService {
   constructor(private http: HttpClient) {}
 
-  getCurrencies(): Observable<any> {
-    return this.http.get<any>(
-      'https://api.currencyfreaks.com/v2.0/rates/latest?apikey=ef5e93a70a504e87ac2a32c84641dfea'
+  getCurrencies(
+    base: CurrencyEnum = CurrencyEnum.USD
+  ): Observable<ICurrency[]> {
+    return this.http.get<ICurrency[]>(
+      `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${base}.json`
     );
   }
 }
