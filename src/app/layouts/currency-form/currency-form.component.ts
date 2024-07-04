@@ -6,6 +6,7 @@ import { ICurrency } from '../../shared/interfaces/currency.interface';
 import { CurrencyEnum } from '../../shared/enums/currency.enum';
 import { ValidateSpaces } from '../../shared/validations/space-validation';
 import { ValidateNumbers } from '../../shared/validations/number-validation';
+import { fixedNumber } from '../../shared/helpers/fixedNumber.helper';
 
 @Component({
   selector: 'app-currency-form',
@@ -110,13 +111,11 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
       switch (inputName) {
         case 'fromAmount':
           const rate = +value * this.currencyRate;
-          controls['toAmount'].setValue(Number(rate.toFixed(4)));
+          controls['toAmount'].setValue(fixedNumber(rate));
           break;
         case 'toAmount':
           const newFromAmountValue = +value / this.currencyRate;
-          controls['fromAmount'].setValue(
-            Number(newFromAmountValue.toFixed(4))
-          );
+          controls['fromAmount'].setValue(fixedNumber(newFromAmountValue));
           break;
         default:
           break;
@@ -140,7 +139,7 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
 
     const rate = +baseCurrencyValue * this.currencyRate;
 
-    controls['fromAmount'].setValue(Number(baseCurrencyValue).toFixed(4));
-    controls['toAmount'].setValue(Number(rate.toFixed(4)));
+    controls['fromAmount'].setValue(fixedNumber(baseCurrencyValue));
+    controls['toAmount'].setValue(fixedNumber(rate));
   }
 }
