@@ -57,7 +57,6 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe((data) => {
-        console.log(data);
         this.currencyRate = data[this.baseCurrency][this.currencyToConvertTo];
         this.initFormValues(baseCurrencyValue);
       });
