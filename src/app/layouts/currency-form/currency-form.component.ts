@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { catchError, EMPTY, Subject, takeUntil } from 'rxjs';
 import { CurrenciesService } from '../../shared/services/currencies.service';
-import { ICurrency } from '../../shared/interfaces/currency.interface';
+import { CurrencyData } from '../../shared/interfaces/currency.interface';
 import { CurrencyEnum } from '../../shared/enums/currency.enum';
 import { ValidateSpaces } from '../../shared/validations/space-validation';
 import { ValidateNumbers } from '../../shared/validations/number-validation';
@@ -15,8 +15,6 @@ import { fixedNumber } from '../../shared/helpers/fixedNumber.helper';
 })
 export class CurrencyFormComponent implements OnInit, OnDestroy {
   public formGroup: FormGroup;
-
-  public currencies: ICurrency[] = [];
 
   public baseCurrency: CurrencyEnum = CurrencyEnum.USD;
 
@@ -50,6 +48,10 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
   getCurrenciesData(baseCurrencyValue?): void {
     this.currenciesService
       .getCurrencies(this.baseCurrency)
+      .pipe(
+        catchError((e) => EMPTY),
+        takeUntil(this.destroyed$)
+      )
       .subscribe((data) => {
         this.currencyRate = data[this.baseCurrency][this.currencyToConvertTo];
         this.initFormValues(baseCurrencyValue);
