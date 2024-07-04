@@ -48,10 +48,16 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
     this.currenciesService
       .getCurrencies(this.baseCurrency)
       .pipe(
-        catchError((e) => EMPTY),
+        catchError((e) => {
+          this.formGroup.setErrors({
+            serviceError: true,
+          });
+          return EMPTY;
+        }),
         takeUntil(this.destroyed$)
       )
       .subscribe((data) => {
+        console.log(data);
         this.currencyRate = data[this.baseCurrency][this.currencyToConvertTo];
         this.initFormValues(baseCurrencyValue);
       });
@@ -66,6 +72,10 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
 
   public getErrorMessage(): string {
     const { controls } = this.formGroup;
+
+    if (this.formGroup.hasError('serviceError')) {
+      return 'An error occured while fetching the data. Please, try again.';
+    }
 
     if (
       controls['fromAmount'].hasError('hasSpaces') ||

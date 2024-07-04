@@ -37,5 +37,9 @@
       </mat-form-field>
     </app-currency-input>
   </form>
-  <span id="form-error" *ngIf="!formGroup.valid">{{ getErrorMessage() }}</span>
+  <ng-template *ngIf="formGroup">
+    <span id="form-error" *ngIf="!formGroup.valid">{{
+      getErrorMessage()
+    }}</span>
+  </ng-template>
 </div>
