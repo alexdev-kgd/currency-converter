@@ -4,6 +4,8 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { CurrenciesService } from '../../shared/services/currencies.service';
 import { ICurrency } from '../../shared/interfaces/currency.interface';
 import { CurrencyEnum } from '../../shared/enums/currency.enum';
+import { ValidateSpaces } from '../../shared/validations/space-validation';
+import { ValidateNumbers } from '../../shared/validations/number-validation';
 
 @Component({
   selector: 'app-currency-form',
@@ -22,6 +24,13 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
   private currencyRate: number;
 
   private destroyed$ = new Subject<void>();
+
+  get fromAmount() {
+    return this.formGroup.get('fromAmount');
+  }
+  get toAmount() {
+    return this.formGroup.get('toAmount');
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -48,11 +57,32 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
 
   private buildForm(): void {
     this.formGroup = this.formBuilder.group({
-      fromCurrency: ['', []],
-      fromAmount: ['', []],
-      toCurrency: ['', []],
-      toAmount: ['', []],
+      fromAmount: ['', [Validators.required, ValidateSpaces, ValidateNumbers]],
+      toAmount: ['', [Validators.required, ValidateSpaces, ValidateNumbers]],
     });
+  }
+
+  public getErrorMessage(): string {
+    const { controls } = this.formGroup;
+
+    if (
+      controls['fromAmount'].hasError('hasSpaces') ||
+      controls['toAmount'].hasError('hasSpaces')
+    ) {
+      return 'Fields should not have spaces';
+    } else if (
+      controls['fromAmount'].hasError('notANumber') ||
+      controls['toAmount'].hasError('notANumber')
+    ) {
+      return 'Fields must contain numbers only';
+    } else if (
+      controls['fromAmount'].hasError('required') ||
+      controls['toAmount'].hasError('required')
+    ) {
+      return 'Fields must contain at least 1 digit';
+    }
+
+    return '';
   }
 
   public updateCurrencyRate(currencyName: any, dropdownName: string): void {
@@ -74,19 +104,23 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
   }
 
   public updateCurrencyValues(event: any, inputName: string): void {
-    const { controls } = this.formGroup;
-    const value = event.target.value;
-    switch (inputName) {
-      case 'fromAmount':
-        const rate = +value * this.currencyRate;
-        controls['toAmount'].setValue(Number(rate.toFixed(4)));
-        break;
-      case 'toAmount':
-        const newFromAmountValue = +value / this.currencyRate;
-        controls['fromAmount'].setValue(Number(newFromAmountValue.toFixed(4)));
-        break;
-      default:
-        break;
+    if (this.formGroup.valid) {
+      const { controls } = this.formGroup;
+      const value = event.target.value;
+      switch (inputName) {
+        case 'fromAmount':
+          const rate = +value * this.currencyRate;
+          controls['toAmount'].setValue(Number(rate.toFixed(4)));
+          break;
+        case 'toAmount':
+          const newFromAmountValue = +value / this.currencyRate;
+          controls['fromAmount'].setValue(
+            Number(newFromAmountValue.toFixed(4))
+          );
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -106,7 +140,6 @@ export class CurrencyFormComponent implements OnInit, OnDestroy {
 
     const rate = +baseCurrencyValue * this.currencyRate;
 
-    console.log(baseCurrencyValue);
     controls['fromAmount'].setValue(Number(baseCurrencyValue).toFixed(4));
     controls['toAmount'].setValue(Number(rate.toFixed(4)));
   }
