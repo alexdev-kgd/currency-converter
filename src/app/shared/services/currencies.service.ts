@@ -10,9 +10,7 @@ import { CurrencyEnum } from '../enums/currency.enum';
 export class CurrenciesService {
   constructor(private http: HttpClient) {}
 
-  getCurrencies(
-    base: CurrencyEnum = CurrencyEnum.USD
-  ): Observable<ICurrency[]> {
+  getCurrencies(base: CurrencyEnum): Observable<ICurrency[]> {
     return this.http.get<ICurrency[]>(
       `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${base}.json`
     );

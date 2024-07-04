@@ -1,7 +1,7 @@
 <mat-form-field appearance="outline">
-  <mat-select>
+  <mat-select [value]="selectedCurrency" (selectionChange)="onChange($event)">
     <mat-option *ngFor="let currency of currencies" [value]="currency">
-      {{ currency }}
+      {{ currency | uppercase }}
     </mat-option>
   </mat-select>
 </mat-form-field>

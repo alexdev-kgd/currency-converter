@@ -13,70 +13,101 @@ import { CurrencyEnum } from '../../shared/enums/currency.enum';
 export class CurrencyFormComponent implements OnInit, OnDestroy {
   public formGroup: FormGroup;
 
+  public currencies: ICurrency[] = [];
+
+  public baseCurrency: CurrencyEnum = CurrencyEnum.USD;
+
+  public currencyToConvertTo: CurrencyEnum = CurrencyEnum.RUB;
+
+  private currencyRate: number;
+
   private destroyed$ = new Subject<void>();
 
-  public currencies: ICurrency[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private currenciesService: CurrenciesService
-  ) {
-    this.currenciesService.getCurrencies().subscribe((data) => {
-      console.log(data);
-      this.currencies = data;
-      // this.currencies[CurrencyEnum.RUB][]
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.buildForm();
-    this.onCurrencyChange();
+    this.getCurrenciesData();
   }
 
   ngOnDestroy(): void {
     this.destroyed$.next();
   }
 
-  private buildForm(): void {
-    this.formGroup = this.formBuilder.group({
-      fromCurrency: ['', [Validators.required]],
-      fromAmount: ['', [Validators.required]],
-      toCurrency: ['', [Validators.required]],
-      toAmount: ['', [Validators.required]],
-    });
-  }
-
-  // private setFormValue(currency) {
-  //   const { controls } = this.formGroup;
-
-  //   controls.fromCurrency.setValue(currency.base);
-  // }
-
-  private onCurrencyChange(): void {
-    this.formGroup.valueChanges
-      .pipe(takeUntil(this.destroyed$), debounceTime(300))
-      .subscribe((params) => {
-        this.processCurrencyCalculation();
+  getCurrenciesData(baseCurrencyValue?): void {
+    this.currenciesService
+      .getCurrencies(this.baseCurrency)
+      .subscribe((data) => {
+        this.currencyRate = data[this.baseCurrency][this.currencyToConvertTo];
+        this.initFormValues(baseCurrencyValue);
       });
   }
 
-  processCurrencyCalculation() {
-    if (this.formGroup.valid) {
-      this.formGroup.disable();
+  private buildForm(): void {
+    this.formGroup = this.formBuilder.group({
+      fromCurrency: ['', []],
+      fromAmount: ['', []],
+      toCurrency: ['', []],
+      toAmount: ['', []],
+    });
+  }
+
+  public updateCurrencyRate(currencyName: any, dropdownName: string): void {
+    const { controls } = this.formGroup;
+
+    switch (dropdownName) {
+      case 'fromCurrency':
+        this.baseCurrency = currencyName;
+        this.getCurrenciesData();
+        break;
+      case 'toCurrency':
+        this.currencyToConvertTo = currencyName;
+        const baseCurrencyValue = controls['fromAmount'].value;
+        this.getCurrenciesData(baseCurrencyValue);
+        break;
+      default:
+        break;
     }
+  }
 
-    const fromCurrencyValue = this.formGroup.get('fromCurrency')?.value;
-    const fromAmountValue = this.formGroup.get('fromAmount')?.value;
-    const toCurrencyValue = this.formGroup.get('toCurrency')?.value;
-    const toAmountValue = this.formGroup.get('toAmount')?.value;
+  public updateCurrencyValues(event: any, inputName: string): void {
+    const { controls } = this.formGroup;
+    const value = event.target.value;
+    switch (inputName) {
+      case 'fromAmount':
+        const rate = +value * this.currencyRate;
+        controls['toAmount'].setValue(Number(rate.toFixed(4)));
+        break;
+      case 'toAmount':
+        const newFromAmountValue = +value / this.currencyRate;
+        controls['fromAmount'].setValue(Number(newFromAmountValue.toFixed(4)));
+        break;
+      default:
+        break;
+    }
+  }
 
-    // const rate = this.currencies.find(
-    //   (currency) => currency.base === fromCurrencyValue
-    // )?.rates[toCurrencyValue];
+  public swapCurrencies(): void {
+    const { controls } = this.formGroup;
+    const newBaseValue = controls['fromAmount'].value;
 
-    // if (rate) {
-    //   const toAmountValue = fromAmountValue * rate;
+    const baseCurrencybuffer = this.baseCurrency;
+    this.baseCurrency = this.currencyToConvertTo;
+    this.currencyToConvertTo = baseCurrencybuffer;
 
-    //   this.formGroup.get('toAmount')?.setValue(toAmountValue.toFixed(4));
-    // }
+    this.getCurrenciesData(newBaseValue);
+  }
+
+  private initFormValues(baseCurrencyValue = 1) {
+    const { controls } = this.formGroup;
+
+    const rate = +baseCurrencyValue * this.currencyRate;
+
+    console.log(baseCurrencyValue);
+    controls['fromAmount'].setValue(Number(baseCurrencyValue).toFixed(4));
+    controls['toAmount'].setValue(Number(rate.toFixed(4)));
   }
 }

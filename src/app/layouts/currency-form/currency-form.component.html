@@ -3,16 +3,37 @@
     <app-currency-input>
       <app-currency-dropdown
         dropdownType="fromCurrency"
+        [selectedCurrency]="baseCurrency"
+        (onDropdownChange)="updateCurrencyRate($event, 'fromCurrency')"
       ></app-currency-dropdown>
       <mat-form-field appearance="outline">
-        <input matInput formControlName="fromAmount" type="text" />
+        <input
+          matInput
+          formControlName="fromAmount"
+          type="text"
+          (input)="updateCurrencyValues($event, 'fromAmount')"
+        />
       </mat-form-field>
     </app-currency-input>
-    <mat-icon svgIcon="exchange" [inline]="true" id="exchange-icon"></mat-icon>
+    <mat-icon
+      svgIcon="exchange"
+      [inline]="true"
+      id="exchange-icon"
+      (click)="swapCurrencies()"
+    ></mat-icon>
     <app-currency-input>
-      <app-currency-dropdown dropdownType="toCurrency"></app-currency-dropdown>
+      <app-currency-dropdown
+        dropdownType="toCurrency"
+        [selectedCurrency]="currencyToConvertTo"
+        (onDropdownChange)="updateCurrencyRate($event, 'toCurrency')"
+      ></app-currency-dropdown>
       <mat-form-field appearance="outline">
-        <input matInput formControlName="toAmount" type="text" />
+        <input
+          matInput
+          formControlName="toAmount"
+          type="text"
+          (input)="updateCurrencyValues($event, 'toAmount')"
+        />
       </mat-form-field>
     </app-currency-input>
   </form>
